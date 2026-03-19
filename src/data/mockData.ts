@@ -43,3 +43,13 @@ export const mockComments: TaskComment[] = [
   { id: 'cm6', task_id: 't8', user_id: 'u1', comment: 'On hold — waiting for board resolution from client.', created_at: daysAgo(5) + 'T13:00:00Z' },
   { id: 'cm7', task_id: 't9', user_id: 'u3', comment: 'Collecting Form 16A from all deductees.', created_at: daysAgo(3) + 'T10:00:00Z' },
 ];
+
+export let mockMembers: ClientMember[] = [
+  { id: 'm1', client_id: 'c1', name: 'Dr. Nithya Krishnan', role: 'Director', email: 'nithya@kmch.in', phone: '9876500001', pan: 'AEXPN1234K', din: '01234567', created_at: '2024-01-15T00:00:00Z' },
+  { id: 'm2', client_id: 'c1', name: 'Mr. Ravi Kumar', role: 'Accountant', email: 'ravi@kmch.in', phone: '9876500010', created_at: '2024-01-15T00:00:00Z' },
+  { id: 'm3', client_id: 'c2', name: 'Mr. Suresh Babu', role: 'Director', phone: '9876500002', pan: 'BKRPS5678L', din: '07654321', created_at: '2024-03-01T00:00:00Z' },
+  { id: 'm4', client_id: 'c4', name: 'Mr. Anand', role: 'Partner', phone: '9876500004', pan: 'AACPA9876C', created_at: '2024-01-20T00:00:00Z' },
+  { id: 'm5', client_id: 'c4', name: 'Mrs. Lakshmi', role: 'Partner', phone: '9876500011', pan: 'BKLPL4567D', created_at: '2024-01-20T00:00:00Z' },
+  { id: 'm6', client_id: 'c5', name: 'Ms. Priya Sharma', role: 'Director', email: 'priya@xyz.co.in', phone: '9876500005', pan: 'AABCX4321E', din: '03456789', created_at: '2024-04-01T00:00:00Z' },
+  { id: 'm7', client_id: 'c5', name: 'Mr. Vikram Reddy', role: 'Key Managerial Person', email: 'vikram@xyz.co.in', phone: '9876500012', created_at: '2024-04-01T00:00:00Z' },
+];
