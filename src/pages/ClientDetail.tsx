@@ -15,14 +15,15 @@ import { toast } from 'sonner';
 export default function ClientDetail() {
   const { id } = useParams();
   const client = mockClients.find(c => c.id === id);
-  if (!client) return <p className="text-muted-foreground p-8">Client not found.</p>;
 
-  const tasks = mockTasks.filter(t => t.client_id === client.id);
+  const tasks = client ? mockTasks.filter(t => t.client_id === client.id) : [];
   const getAssigneeName = (uid: string) => mockUsers.find(u => u.id === uid)?.name ?? '';
 
   const [members, setMembers] = useState<ClientMember[]>(
-    mockMembers.filter(m => m.client_id === client.id)
+    mockMembers.filter(m => m.client_id === id)
   );
+
+  if (!client) return <p className="text-muted-foreground p-8">Client not found.</p>;
 
   const handleAddMember = (member: ClientMember) => {
     mockMembers.push(member);
