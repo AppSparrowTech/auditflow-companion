@@ -9,7 +9,7 @@ export const mockUsers: User[] = [
   { id: 'u6', name: 'Ramesh Kumar', email: 'ramesh@email.com', role: 'client', created_at: '2024-06-01T00:00:00Z' },
 ];
 
-export const mockClients: Client[] = [
+export let mockClients: Client[] = [
   { id: 'c1', client_name: 'KMCH Hospital', client_type: 'hospital', file_number: 'F-001', pan: 'AABCK1234H', gstin: '33AABCK1234H1Z5', contact_person: 'Dr. Nithya', contact_email: 'nithya@kmch.in', contact_phone: '9876500001', linked_user_id: 'u5', notes: 'Major hospital client. Quarterly audits required.', created_at: '2024-01-15T00:00:00Z' },
   { id: 'c2', client_name: 'Royal Care Hospital', client_type: 'hospital', file_number: 'F-002', pan: 'AABCR5678K', gstin: '33AABCR5678K1Z3', contact_person: 'Mr. Suresh', contact_phone: '9876500002', notes: 'New client since 2024.', created_at: '2024-03-01T00:00:00Z' },
   { id: 'c3', client_name: 'Ramesh Kumar', client_type: 'individual', file_number: 'F-003', pan: 'BKRPK1234A', contact_person: 'Ramesh Kumar', contact_email: 'ramesh@email.com', contact_phone: '9876500003', linked_user_id: 'u6', created_at: '2024-02-01T00:00:00Z' },
