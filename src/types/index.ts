@@ -1,8 +1,10 @@
-export type UserRole = 'admin' | 'employee' | 'client';
-export type ClientType = 'individual' | 'partnership' | 'company' | 'trust' | 'hospital' | 'other';
-export type TaskType = 'itr_filing' | 'gst_return' | 'tds_return' | 'statutory_audit' | 'internal_audit' | 'bookkeeping' | 'roc_compliance' | 'other';
-export type TaskStatus = 'not_started' | 'in_progress' | 'under_review' | 'completed' | 'on_hold';
+export type UserRole = 'admin' | 'manager' | 'article' | 'client_primary' | 'client_secondary' | 'billing_staff';
+export type ClientType = 'individual' | 'partnership' | 'company' | 'llp' | 'proprietorship' | 'trust' | 'hospital' | 'other';
+export type TaskType = 'itr_filing' | 'gst_return' | 'tds_return' | 'statutory_audit' | 'tax_audit' | 'gst_audit' | 'internal_audit' | 'bookkeeping' | 'roc_compliance' | 'other';
+export type TaskStatus = 'not_started' | 'in_progress' | 'under_review' | 'completed' | 'filed' | 'on_hold';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type EngagementStatus = 'not_started' | 'in_progress' | 'review' | 'completed' | 'filed';
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
 
 export interface User {
   id: string;
@@ -10,6 +12,7 @@ export interface User {
   email: string;
   role: UserRole;
   phone?: string;
+  designation?: string;
   created_at: string;
 }
 
@@ -20,6 +23,8 @@ export interface Client {
   file_number: string;
   pan?: string;
   gstin?: string;
+  cin?: string;
+  tan?: string;
   contact_person: string;
   contact_email?: string;
   contact_phone: string;
@@ -28,9 +33,29 @@ export interface Client {
   created_at: string;
 }
 
+export interface Engagement {
+  id: string;
+  client_id: string;
+  type: TaskType;
+  title: string;
+  description?: string;
+  financial_year: string;
+  assessment_year?: string;
+  status: EngagementStatus;
+  assigned_staff: string[]; // user IDs
+  lead_partner_id: string;
+  due_date: string;
+  start_date?: string;
+  completed_date?: string;
+  fee_amount?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Task {
   id: string;
   client_id: string;
+  engagement_id?: string;
   task_type: TaskType;
   title: string;
   description?: string;
@@ -42,6 +67,7 @@ export interface Task {
   completed_date?: string;
   financial_year: string;
   assessment_year?: string;
+  parent_task_id?: string; // for subtasks
   created_at: string;
   updated_at: string;
 }
@@ -58,12 +84,53 @@ export interface ClientMember {
   id: string;
   client_id: string;
   name: string;
-  role: string; // e.g. 'Director', 'Partner', 'Authorized Signatory', 'Accountant'
+  role: string;
   email?: string;
   phone?: string;
   pan?: string;
-  din?: string; // Director Identification Number
+  din?: string;
   created_at: string;
+}
+
+export interface ComplianceDeadline {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  due_date: string;
+  frequency: 'monthly' | 'quarterly' | 'annual' | 'one_time';
+  applicable_to: ClientType[];
+}
+
+export interface Invoice {
+  id: string;
+  client_id: string;
+  engagement_id?: string;
+  invoice_number: string;
+  date: string;
+  due_date: string;
+  amount: number;
+  gst_amount: number;
+  total_amount: number;
+  status: InvoiceStatus;
+  description: string;
+  paid_date?: string;
+  paid_amount?: number;
+  created_at: string;
+}
+
+export interface Document {
+  id: string;
+  client_id: string;
+  engagement_id?: string;
+  name: string;
+  category: string;
+  financial_year: string;
+  uploaded_by: string;
+  upload_date: string;
+  status: 'pending' | 'received' | 'verified' | 'rejected';
+  version: number;
+  notes?: string;
 }
 
 export const CLIENT_MEMBER_ROLES = [
@@ -75,6 +142,8 @@ export const CLIENT_MEMBER_ROLES = [
   'Trustee',
   'Secretary',
   'Key Managerial Person',
+  'CFO',
+  'Bookkeeper',
   'Other',
 ] as const;
 
@@ -83,6 +152,8 @@ export const TASK_TYPE_LABELS: Record<TaskType, string> = {
   gst_return: 'GST Return',
   tds_return: 'TDS Return',
   statutory_audit: 'Statutory Audit',
+  tax_audit: 'Tax Audit',
+  gst_audit: 'GST Audit',
   internal_audit: 'Internal Audit',
   bookkeeping: 'Bookkeeping',
   roc_compliance: 'ROC Compliance',
@@ -94,6 +165,7 @@ export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   in_progress: 'In Progress',
   under_review: 'Under Review',
   completed: 'Completed',
+  filed: 'Filed',
   on_hold: 'On Hold',
 };
 
@@ -106,9 +178,36 @@ export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
 
 export const CLIENT_TYPE_LABELS: Record<ClientType, string> = {
   individual: 'Individual',
-  partnership: 'Partnership',
-  company: 'Company',
+  partnership: 'Partnership Firm',
+  company: 'Pvt Ltd / Company',
+  llp: 'LLP',
+  proprietorship: 'Proprietorship',
   trust: 'Trust',
   hospital: 'Hospital',
   other: 'Other',
+};
+
+export const ENGAGEMENT_STATUS_LABELS: Record<EngagementStatus, string> = {
+  not_started: 'Not Started',
+  in_progress: 'In Progress',
+  review: 'Under Review',
+  completed: 'Completed',
+  filed: 'Filed',
+};
+
+export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
+  draft: 'Draft',
+  sent: 'Sent',
+  paid: 'Paid',
+  overdue: 'Overdue',
+  cancelled: 'Cancelled',
+};
+
+export const USER_ROLE_LABELS: Record<UserRole, string> = {
+  admin: 'Partner / Admin',
+  manager: 'Manager',
+  article: 'Article / Staff',
+  client_primary: 'Client (Primary)',
+  client_secondary: 'Client (Secondary)',
+  billing_staff: 'Billing Staff',
 };
