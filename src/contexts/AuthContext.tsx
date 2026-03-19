@@ -36,3 +36,7 @@ export const useAuth = () => {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };
+
+// Helper to check if user has staff-level access (admin, manager, article, billing)
+export const isStaffRole = (role: string) => ['admin', 'manager', 'article', 'billing_staff'].includes(role);
+export const isAdminOrManager = (role: string) => ['admin', 'manager'].includes(role);

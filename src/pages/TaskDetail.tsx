@@ -10,10 +10,11 @@ import { PriorityBadge } from '@/components/PriorityBadge';
 import { DeadlineIndicator } from '@/components/DeadlineIndicator';
 import { formatDateIN, formatDateTime } from '@/lib/dateUtils';
 import { useAuth } from '@/contexts/AuthContext';
+import { isStaffRole } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Calendar, User, MessageSquare } from 'lucide-react';
 
-const STATUS_FLOW: TaskStatus[] = ['not_started', 'in_progress', 'under_review', 'completed'];
+const STATUS_FLOW: TaskStatus[] = ['not_started', 'in_progress', 'under_review', 'completed', 'filed'];
 
 export default function TaskDetail() {
   const { id } = useParams();
@@ -28,7 +29,7 @@ export default function TaskDetail() {
 
   const client = mockClients.find(c => c.id === task.client_id);
   const assignee = mockUsers.find(u => u.id === task.assigned_to);
-  const backUrl = user?.role === 'admin' ? '/admin/tasks' : '/employee';
+  const backUrl = user?.role === 'admin' || user?.role === 'manager' ? '/admin/tasks' : '/employee';
 
   const handleStatusChange = (newStatus: TaskStatus) => {
     setStatus(newStatus);
@@ -100,7 +101,7 @@ export default function TaskDetail() {
           <CardTitle className="text-base flex items-center gap-2"><MessageSquare className="h-4 w-4" />Activity ({comments.length})</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {user?.role !== 'client' && (
+          {user && isStaffRole(user.role) && (
             <div className="flex gap-2">
               <Textarea placeholder="Add a comment..." value={newComment} onChange={e => setNewComment(e.target.value)} className="min-h-[60px]" />
               <Button onClick={handleAddComment} disabled={!newComment.trim()} className="self-end">Post</Button>

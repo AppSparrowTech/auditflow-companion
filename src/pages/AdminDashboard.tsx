@@ -1,51 +1,63 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { mockTasks, mockClients, mockUsers } from '@/data/mockData';
+import { mockTasks, mockClients, mockUsers, mockEngagements, mockInvoices } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TaskStatusBadge } from '@/components/TaskStatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { DeadlineIndicator } from '@/components/DeadlineIndicator';
 import { getDaysUntilDue } from '@/lib/dateUtils';
 import { TASK_TYPE_LABELS } from '@/types';
-import { Users, Building2, ListTodo, AlertTriangle, Clock, CheckCircle2, BarChart3 } from 'lucide-react';
+import { Users, Building2, ListTodo, AlertTriangle, Clock, CheckCircle2, BarChart3, IndianRupee, Briefcase } from 'lucide-react';
+import { isStaffRole } from '@/contexts/AuthContext';
 
 export default function AdminDashboard() {
   const stats = useMemo(() => {
-    const activeTasks = mockTasks.filter(t => t.status !== 'completed');
+    const activeTasks = mockTasks.filter(t => t.status !== 'completed' && t.status !== 'filed');
     const overdue = activeTasks.filter(t => getDaysUntilDue(t.due_date) < 0);
-    const completedThisMonth = mockTasks.filter(t => t.status === 'completed');
+    const completedTasks = mockTasks.filter(t => t.status === 'completed' || t.status === 'filed');
     const upcomingWeek = activeTasks.filter(t => {
       const d = getDaysUntilDue(t.due_date);
       return d >= 0 && d <= 7;
     });
-    return { activeTasks, overdue, completedThisMonth, upcomingWeek };
+    const totalRevenue = mockInvoices.reduce((sum, inv) => sum + inv.total_amount, 0);
+    const collected = mockInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + (inv.paid_amount ?? 0), 0);
+    const outstanding = totalRevenue - collected;
+    return { activeTasks, overdue, completedTasks, upcomingWeek, totalRevenue, collected, outstanding };
   }, []);
 
-  const employees = mockUsers.filter(u => u.role === 'employee');
-  const employeeWorkload = employees.map(emp => ({
+  const staffMembers = mockUsers.filter(u => isStaffRole(u.role));
+  const employeeWorkload = staffMembers.filter(u => u.role !== 'billing_staff').map(emp => ({
     ...emp,
-    taskCount: mockTasks.filter(t => t.assigned_to === emp.id && t.status !== 'completed').length,
+    taskCount: mockTasks.filter(t => t.assigned_to === emp.id && t.status !== 'completed' && t.status !== 'filed').length,
     total: mockTasks.filter(t => t.assigned_to === emp.id).length,
   }));
 
   const getClientName = (id: string) => mockClients.find(c => c.id === id)?.client_name ?? '';
   const getAssigneeName = (id: string) => mockUsers.find(u => u.id === id)?.name ?? '';
 
+  const formatCurrency = (n: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
+
   const summaryCards = [
     { label: 'Total Clients', value: mockClients.length, icon: Building2, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Active Engagements', value: mockEngagements.filter(e => e.status !== 'completed' && e.status !== 'filed').length, icon: Briefcase, color: 'text-purple-600 bg-purple-50' },
     { label: 'Active Tasks', value: stats.activeTasks.length, icon: ListTodo, color: 'text-primary bg-accent' },
     { label: 'Overdue', value: stats.overdue.length, icon: AlertTriangle, color: 'text-red-600 bg-red-50' },
-    { label: 'Completed', value: stats.completedThisMonth.length, icon: CheckCircle2, color: 'text-green-600 bg-green-50' },
+  ];
+
+  const revenueCards = [
+    { label: 'Total Billed', value: formatCurrency(stats.totalRevenue), icon: IndianRupee, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Collected', value: formatCurrency(stats.collected), icon: CheckCircle2, color: 'text-green-600 bg-green-50' },
+    { label: 'Outstanding', value: formatCurrency(stats.outstanding), icon: AlertTriangle, color: 'text-orange-600 bg-orange-50' },
+    { label: 'Team Members', value: staffMembers.length, icon: Users, color: 'text-primary bg-accent' },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
-        <p className="text-muted-foreground text-sm">Overview of your firm's task health</p>
+        <h2 className="text-2xl font-bold text-foreground">Partner Dashboard</h2>
+        <p className="text-muted-foreground text-sm">Overview of your firm's operations</p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {summaryCards.map(card => (
           <Card key={card.label}>
@@ -54,6 +66,25 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
                   <p className="text-2xl font-bold text-foreground mt-1">{card.value}</p>
+                </div>
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${card.color}`}>
+                  <card.icon className="h-5 w-5" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Revenue Overview */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {revenueCards.map(card => (
+          <Card key={card.label}>
+            <CardContent className="pt-5 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
+                  <p className="text-lg font-bold text-foreground mt-1">{card.value}</p>
                 </div>
                 <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${card.color}`}>
                   <card.icon className="h-5 w-5" />
@@ -95,12 +126,12 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Employee Workload */}
+        {/* Staff Workload */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-primary" />
-              Employee Workload
+              Staff Workload
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -108,7 +139,10 @@ export default function AdminDashboard() {
               {employeeWorkload.map(emp => (
                 <Link key={emp.id} to={`/admin/employees/${emp.id}`} className="block hover:bg-muted/50 p-2 rounded-lg transition-colors -mx-2">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">{emp.name}</span>
+                    <div>
+                      <span className="text-sm font-medium">{emp.name}</span>
+                      <span className="text-[10px] text-muted-foreground ml-1.5">({emp.designation})</span>
+                    </div>
                     <span className="text-xs text-muted-foreground">{emp.taskCount} active</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">

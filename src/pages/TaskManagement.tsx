@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { mockTasks, mockClients, mockUsers } from '@/data/mockData';
-import { TASK_TYPE_LABELS, TASK_STATUS_LABELS, TaskStatus, TaskType } from '@/types';
+import { TASK_TYPE_LABELS, TASK_STATUS_LABELS } from '@/types';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TaskStatusBadge } from '@/components/TaskStatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { DeadlineIndicator } from '@/components/DeadlineIndicator';
 import { Search } from 'lucide-react';
+import { isStaffRole } from '@/contexts/AuthContext';
 
 export default function TaskManagement() {
   const [search, setSearch] = useState('');
@@ -16,7 +17,7 @@ export default function TaskManagement() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
 
-  const employees = mockUsers.filter(u => u.role === 'employee');
+  const staff = mockUsers.filter(u => isStaffRole(u.role));
   const getClientName = (id: string) => mockClients.find(c => c.id === id)?.client_name ?? '';
   const getAssigneeName = (id: string) => mockUsers.find(u => u.id === id)?.name ?? '';
 
@@ -57,8 +58,8 @@ export default function TaskManagement() {
         <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
           <SelectTrigger className="w-full sm:w-[160px]"><SelectValue placeholder="Assignee" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Employees</SelectItem>
-            {employees.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+            <SelectItem value="all">All Staff</SelectItem>
+            {staff.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>

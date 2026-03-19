@@ -6,6 +6,7 @@ const statusStyles: Record<TaskStatus, string> = {
   in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
   under_review: 'bg-amber-50 text-amber-700 border-amber-200',
   completed: 'bg-green-50 text-green-700 border-green-200',
+  filed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   on_hold: 'bg-orange-50 text-orange-700 border-orange-200',
 };
 

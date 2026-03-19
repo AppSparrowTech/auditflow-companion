@@ -19,9 +19,9 @@ export default function Login() {
     e.preventDefault();
     const success = login(email, password);
     if (success) {
-      const user = email.includes('admin') ? 'admin' : email.includes('kmch') || email.includes('ramesh') ? 'client' : 'employee';
-      if (user === 'admin') navigate('/admin');
-      else if (user === 'client') navigate('/portal');
+      // Route based on role
+      if (email.includes('admin')) navigate('/admin');
+      else if (email.includes('kmch') || email.includes('ramesh') || email.includes('ravi')) navigate('/portal');
       else navigate('/employee');
     } else {
       toast({ title: 'Login failed', description: 'Invalid email. Try one of the demo accounts below.', variant: 'destructive' });
@@ -36,7 +36,7 @@ export default function Login() {
             <FileText className="h-7 w-7 text-primary-foreground" />
           </div>
           <h1 className="text-3xl font-bold text-foreground">AuditFlow</h1>
-          <p className="text-muted-foreground mt-1">Chartered Accountant Task Tracker</p>
+          <p className="text-muted-foreground mt-1">Indian Auditor Management Platform</p>
         </div>
         <Card>
           <CardHeader>
@@ -60,9 +60,11 @@ export default function Login() {
         <Card className="bg-muted/50">
           <CardContent className="pt-4 pb-4">
             <p className="text-xs font-semibold text-muted-foreground mb-2">Demo Accounts</p>
-            <div className="space-y-1 text-xs text-muted-foreground">
-              <p><span className="font-medium text-foreground">Admin:</span> admin@auditflow.in</p>
-              <p><span className="font-medium text-foreground">Employee:</span> bobin@auditflow.in / supriya@auditflow.in / jagruti@auditflow.in</p>
+            <div className="space-y-1.5 text-xs text-muted-foreground">
+              <p><span className="font-medium text-foreground">Partner/Admin:</span> admin@auditflow.in</p>
+              <p><span className="font-medium text-foreground">Managers:</span> arun@auditflow.in / karthick@auditflow.in</p>
+              <p><span className="font-medium text-foreground">Articles/Staff:</span> nandini@auditflow.in / divya@auditflow.in</p>
+              <p><span className="font-medium text-foreground">Billing:</span> meena@auditflow.in</p>
               <p><span className="font-medium text-foreground">Client:</span> admin@kmch.in / ramesh@email.com</p>
             </div>
           </CardContent>
