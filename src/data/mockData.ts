@@ -1,4 +1,4 @@
-import { User, Client, Task, TaskComment } from '@/types';
+import { User, Client, Task, TaskComment, ClientMember } from '@/types';
 
 export const mockUsers: User[] = [
   { id: 'u1', name: 'Admin (Uncle)', email: 'admin@auditflow.in', role: 'admin', phone: '9876543210', created_at: '2024-01-01T00:00:00Z' },

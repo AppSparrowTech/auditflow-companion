@@ -54,6 +54,30 @@ export interface TaskComment {
   created_at: string;
 }
 
+export interface ClientMember {
+  id: string;
+  client_id: string;
+  name: string;
+  role: string; // e.g. 'Director', 'Partner', 'Authorized Signatory', 'Accountant'
+  email?: string;
+  phone?: string;
+  pan?: string;
+  din?: string; // Director Identification Number
+  created_at: string;
+}
+
+export const CLIENT_MEMBER_ROLES = [
+  'Director',
+  'Partner',
+  'Proprietor',
+  'Authorized Signatory',
+  'Accountant',
+  'Trustee',
+  'Secretary',
+  'Key Managerial Person',
+  'Other',
+] as const;
+
 export const TASK_TYPE_LABELS: Record<TaskType, string> = {
   itr_filing: 'ITR Filing',
   gst_return: 'GST Return',
