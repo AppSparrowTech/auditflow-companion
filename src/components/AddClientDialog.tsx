@@ -21,6 +21,8 @@ export function AddClientDialog({ onAdd }: AddClientDialogProps) {
     file_number: '',
     pan: '',
     gstin: '',
+    cin: '',
+    tan: '',
     contact_person: '',
     contact_email: '',
     contact_phone: '',
@@ -40,6 +42,8 @@ export function AddClientDialog({ onAdd }: AddClientDialogProps) {
       file_number: form.file_number,
       pan: form.pan || undefined,
       gstin: form.gstin || undefined,
+      cin: form.cin || undefined,
+      tan: form.tan || undefined,
       contact_person: form.contact_person,
       contact_email: form.contact_email || undefined,
       contact_phone: form.contact_phone,
@@ -48,11 +52,14 @@ export function AddClientDialog({ onAdd }: AddClientDialogProps) {
     };
     onAdd(newClient);
     toast.success(`Client "${newClient.client_name}" added successfully`);
-    setForm({ client_name: '', client_type: 'individual', file_number: '', pan: '', gstin: '', contact_person: '', contact_email: '', contact_phone: '', notes: '' });
+    setForm({ client_name: '', client_type: 'individual', file_number: '', pan: '', gstin: '', cin: '', tan: '', contact_person: '', contact_email: '', contact_phone: '', notes: '' });
     setOpen(false);
   };
 
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const showCIN = ['company', 'llp'].includes(form.client_type);
+  const showTAN = ['company', 'llp', 'partnership', 'hospital'].includes(form.client_type);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -70,7 +77,7 @@ export function AddClientDialog({ onAdd }: AddClientDialogProps) {
               <Input id="client_name" value={form.client_name} onChange={e => update('client_name', e.target.value)} placeholder="e.g. KMCH Hospital" />
             </div>
             <div>
-              <Label htmlFor="client_type">Client Type *</Label>
+              <Label htmlFor="client_type">Entity Type *</Label>
               <Select value={form.client_type} onValueChange={v => update('client_type', v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -84,15 +91,35 @@ export function AddClientDialog({ onAdd }: AddClientDialogProps) {
               <Label htmlFor="file_number">File Number *</Label>
               <Input id="file_number" value={form.file_number} onChange={e => update('file_number', e.target.value)} placeholder="e.g. F-006" />
             </div>
-            <div>
-              <Label htmlFor="pan">PAN</Label>
-              <Input id="pan" value={form.pan} onChange={e => update('pan', e.target.value.toUpperCase())} placeholder="AAACB1234K" maxLength={10} />
-            </div>
-            <div>
-              <Label htmlFor="gstin">GSTIN</Label>
-              <Input id="gstin" value={form.gstin} onChange={e => update('gstin', e.target.value.toUpperCase())} placeholder="33AAACB1234K1Z5" maxLength={15} />
+          </div>
+
+          {/* KYC Details */}
+          <div className="border-t pt-4">
+            <p className="text-sm font-medium mb-3 text-muted-foreground">KYC Details</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="pan">PAN</Label>
+                <Input id="pan" value={form.pan} onChange={e => update('pan', e.target.value.toUpperCase())} placeholder="AAACB1234K" maxLength={10} />
+              </div>
+              <div>
+                <Label htmlFor="gstin">GSTIN</Label>
+                <Input id="gstin" value={form.gstin} onChange={e => update('gstin', e.target.value.toUpperCase())} placeholder="33AAACB1234K1Z5" maxLength={15} />
+              </div>
+              {showCIN && (
+                <div>
+                  <Label htmlFor="cin">CIN / LLPIN</Label>
+                  <Input id="cin" value={form.cin} onChange={e => update('cin', e.target.value.toUpperCase())} placeholder="U85110TN2005PTC..." maxLength={21} />
+                </div>
+              )}
+              {showTAN && (
+                <div>
+                  <Label htmlFor="tan">TAN</Label>
+                  <Input id="tan" value={form.tan} onChange={e => update('tan', e.target.value.toUpperCase())} placeholder="CHEK12345A" maxLength={10} />
+                </div>
+              )}
             </div>
           </div>
+
           <div className="border-t pt-4">
             <p className="text-sm font-medium mb-3 text-muted-foreground">Contact Details</p>
             <div className="grid grid-cols-2 gap-4">

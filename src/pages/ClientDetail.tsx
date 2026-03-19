@@ -1,22 +1,25 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockClients, mockTasks, mockUsers, mockMembers } from '@/data/mockData';
-import { CLIENT_TYPE_LABELS, TASK_TYPE_LABELS, ClientMember } from '@/types';
+import { mockClients, mockTasks, mockUsers, mockMembers, mockEngagements, mockDocuments } from '@/data/mockData';
+import { CLIENT_TYPE_LABELS, TASK_TYPE_LABELS, ENGAGEMENT_STATUS_LABELS, ClientMember } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TaskStatusBadge } from '@/components/TaskStatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { DeadlineIndicator } from '@/components/DeadlineIndicator';
-import { ArrowLeft, Building2, Phone, Mail, FileText, Users, Trash2 } from 'lucide-react';
+import { ArrowLeft, Building2, Phone, Mail, FileText, Users, Trash2, Briefcase, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AddMemberDialog } from '@/components/AddMemberDialog';
 import { toast } from 'sonner';
+import { formatDateIN } from '@/lib/dateUtils';
 
 export default function ClientDetail() {
   const { id } = useParams();
   const client = mockClients.find(c => c.id === id);
 
   const tasks = client ? mockTasks.filter(t => t.client_id === client.id) : [];
+  const engagements = client ? mockEngagements.filter(e => e.client_id === client.id) : [];
+  const documents = client ? mockDocuments.filter(d => d.client_id === client.id) : [];
   const getAssigneeName = (uid: string) => mockUsers.find(u => u.id === uid)?.name ?? '';
 
   const [members, setMembers] = useState<ClientMember[]>(
@@ -62,11 +65,13 @@ export default function ClientDetail() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Tax Details</CardTitle></CardHeader>
-          <CardContent className="text-sm space-y-2">
-            {client.pan && <p><span className="text-muted-foreground">PAN:</span> {client.pan}</p>}
-            {client.gstin && <p><span className="text-muted-foreground">GSTIN:</span> {client.gstin}</p>}
-            {!client.pan && !client.gstin && <p className="text-muted-foreground">No tax details</p>}
+          <CardHeader className="pb-2"><CardTitle className="text-sm">KYC / Tax Details</CardTitle></CardHeader>
+          <CardContent className="text-sm space-y-1.5">
+            {client.pan && <p><span className="text-muted-foreground">PAN:</span> <span className="font-mono text-xs">{client.pan}</span></p>}
+            {client.gstin && <p><span className="text-muted-foreground">GSTIN:</span> <span className="font-mono text-xs">{client.gstin}</span></p>}
+            {client.cin && <p><span className="text-muted-foreground">CIN:</span> <span className="font-mono text-xs">{client.cin}</span></p>}
+            {client.tan && <p><span className="text-muted-foreground">TAN:</span> <span className="font-mono text-xs">{client.tan}</span></p>}
+            {!client.pan && !client.gstin && !client.cin && !client.tan && <p className="text-muted-foreground">No KYC details</p>}
           </CardContent>
         </Card>
         <Card>
@@ -126,6 +131,90 @@ export default function ClientDetail() {
           )}
         </CardContent>
       </Card>
+
+      {/* Engagements Section */}
+      {engagements.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Briefcase className="h-4 w-4" /> Engagements ({engagements.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Engagement</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Type</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Staff</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Status</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Due</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {engagements.map(eng => (
+                    <tr key={eng.id} className="border-b last:border-0 hover:bg-muted/30">
+                      <td className="py-2.5 font-medium">{eng.title}</td>
+                      <td className="py-2.5 text-muted-foreground text-xs">{TASK_TYPE_LABELS[eng.type]}</td>
+                      <td className="py-2.5">
+                        <div className="flex flex-wrap gap-1">
+                          {eng.assigned_staff.map(uid => (
+                            <Badge key={uid} variant="secondary" className="text-[10px]">{getAssigneeName(uid)}</Badge>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="py-2.5">
+                        <Badge variant="outline" className="text-xs">{ENGAGEMENT_STATUS_LABELS[eng.status]}</Badge>
+                      </td>
+                      <td className="py-2.5">
+                        <DeadlineIndicator dueDate={eng.due_date} status={eng.status === 'completed' || eng.status === 'filed' ? 'completed' : 'in_progress'} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Documents Section */}
+      {documents.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FolderOpen className="h-4 w-4" /> Documents ({documents.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Document</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Category</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Uploaded</th>
+                    <th className="text-left py-2 text-xs font-medium text-muted-foreground">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {documents.map(doc => (
+                    <tr key={doc.id} className="border-b last:border-0 hover:bg-muted/30">
+                      <td className="py-2.5 font-medium">{doc.name}</td>
+                      <td className="py-2.5"><Badge variant="secondary" className="text-[10px]">{doc.category}</Badge></td>
+                      <td className="py-2.5 text-xs text-muted-foreground">{formatDateIN(doc.upload_date)}</td>
+                      <td className="py-2.5">
+                        <Badge variant="outline" className="text-xs capitalize">{doc.status}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tasks Section */}
       <Card>

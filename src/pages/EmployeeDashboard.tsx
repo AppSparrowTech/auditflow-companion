@@ -15,9 +15,9 @@ export default function EmployeeDashboard() {
   if (!user) return null;
 
   const myTasks = mockTasks.filter(t => t.assigned_to === user.id);
-  const active = myTasks.filter(t => t.status !== 'completed');
+  const active = myTasks.filter(t => t.status !== 'completed' && t.status !== 'filed');
   const overdue = active.filter(t => getDaysUntilDue(t.due_date) < 0);
-  const completed = myTasks.filter(t => t.status === 'completed');
+  const completed = myTasks.filter(t => t.status === 'completed' || t.status === 'filed');
 
   const getClientName = (id: string) => mockClients.find(c => c.id === id)?.client_name ?? '';
 

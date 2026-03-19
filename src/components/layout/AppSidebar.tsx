@@ -1,7 +1,7 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, isStaffRole } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Building2, ListTodo, UserCircle, LogOut, FileText
+  LayoutDashboard, Users, Building2, ListTodo, UserCircle, LogOut, FileText, Calendar, IndianRupee, Briefcase, FolderOpen
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -10,12 +10,17 @@ import {
   SidebarFooter, useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { USER_ROLE_LABELS } from '@/types';
 
 const adminItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
   { title: 'Clients', url: '/admin/clients', icon: Building2 },
+  { title: 'Engagements', url: '/admin/engagements', icon: Briefcase },
   { title: 'Tasks', url: '/admin/tasks', icon: ListTodo },
-  { title: 'Employees', url: '/admin/employees', icon: Users },
+  { title: 'Documents', url: '/admin/documents', icon: FolderOpen },
+  { title: 'Compliance', url: '/admin/compliance', icon: Calendar },
+  { title: 'Billing', url: '/admin/billing', icon: IndianRupee },
+  { title: 'Team', url: '/admin/employees', icon: Users },
 ];
 
 const employeeItems = [
@@ -26,6 +31,12 @@ const clientItems = [
   { title: 'My Files', url: '/portal', icon: FileText },
 ];
 
+const billingItems = [
+  { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
+  { title: 'Billing', url: '/admin/billing', icon: IndianRupee },
+  { title: 'Clients', url: '/admin/clients', icon: Building2 },
+];
+
 export function AppSidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -34,7 +45,13 @@ export function AppSidebar() {
 
   if (!user) return null;
 
-  const items = user.role === 'admin' ? adminItems : user.role === 'employee' ? employeeItems : clientItems;
+  const getItems = () => {
+    if (user.role === 'admin' || user.role === 'manager') return adminItems;
+    if (user.role === 'billing_staff') return billingItems;
+    if (user.role === 'article') return employeeItems;
+    return clientItems;
+  };
+  const items = getItems();
 
   const handleLogout = () => {
     logout();
@@ -53,7 +70,7 @@ export function AppSidebar() {
                 </div>
                 <div>
                   <div className="font-bold text-sm text-sidebar-primary">AuditFlow</div>
-                  <div className="text-[10px] text-sidebar-foreground/50 font-normal normal-case tracking-normal">Task Tracker</div>
+                  <div className="text-[10px] text-sidebar-foreground/50 font-normal normal-case tracking-normal">Auditor Platform</div>
                 </div>
               </div>
             )}
@@ -85,7 +102,7 @@ export function AppSidebar() {
             <UserCircle className="h-5 w-5 text-sidebar-foreground/60" />
             <div className="truncate">
               <div className="text-xs font-medium text-sidebar-foreground">{user.name}</div>
-              <div className="text-[10px] text-sidebar-foreground/50 capitalize">{user.role}</div>
+              <div className="text-[10px] text-sidebar-foreground/50">{USER_ROLE_LABELS[user.role]}</div>
             </div>
           </div>
         )}
