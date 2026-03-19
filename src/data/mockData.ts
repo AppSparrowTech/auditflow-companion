@@ -1,4 +1,4 @@
-import { User, Client, Task, TaskComment } from '@/types';
+import { User, Client, Task, TaskComment, ClientMember } from '@/types';
 
 export const mockUsers: User[] = [
   { id: 'u1', name: 'Admin (Uncle)', email: 'admin@auditflow.in', role: 'admin', phone: '9876543210', created_at: '2024-01-01T00:00:00Z' },
@@ -9,7 +9,7 @@ export const mockUsers: User[] = [
   { id: 'u6', name: 'Ramesh Kumar', email: 'ramesh@email.com', role: 'client', created_at: '2024-06-01T00:00:00Z' },
 ];
 
-export const mockClients: Client[] = [
+export let mockClients: Client[] = [
   { id: 'c1', client_name: 'KMCH Hospital', client_type: 'hospital', file_number: 'F-001', pan: 'AABCK1234H', gstin: '33AABCK1234H1Z5', contact_person: 'Dr. Nithya', contact_email: 'nithya@kmch.in', contact_phone: '9876500001', linked_user_id: 'u5', notes: 'Major hospital client. Quarterly audits required.', created_at: '2024-01-15T00:00:00Z' },
   { id: 'c2', client_name: 'Royal Care Hospital', client_type: 'hospital', file_number: 'F-002', pan: 'AABCR5678K', gstin: '33AABCR5678K1Z3', contact_person: 'Mr. Suresh', contact_phone: '9876500002', notes: 'New client since 2024.', created_at: '2024-03-01T00:00:00Z' },
   { id: 'c3', client_name: 'Ramesh Kumar', client_type: 'individual', file_number: 'F-003', pan: 'BKRPK1234A', contact_person: 'Ramesh Kumar', contact_email: 'ramesh@email.com', contact_phone: '9876500003', linked_user_id: 'u6', created_at: '2024-02-01T00:00:00Z' },
@@ -42,4 +42,14 @@ export const mockComments: TaskComment[] = [
   { id: 'cm5', task_id: 't4', user_id: 'u1', comment: 'Reviewed. Minor observations on inventory valuation. Please revise.', created_at: daysAgo(1) + 'T11:00:00Z' },
   { id: 'cm6', task_id: 't8', user_id: 'u1', comment: 'On hold — waiting for board resolution from client.', created_at: daysAgo(5) + 'T13:00:00Z' },
   { id: 'cm7', task_id: 't9', user_id: 'u3', comment: 'Collecting Form 16A from all deductees.', created_at: daysAgo(3) + 'T10:00:00Z' },
+];
+
+export let mockMembers: ClientMember[] = [
+  { id: 'm1', client_id: 'c1', name: 'Dr. Nithya Krishnan', role: 'Director', email: 'nithya@kmch.in', phone: '9876500001', pan: 'AEXPN1234K', din: '01234567', created_at: '2024-01-15T00:00:00Z' },
+  { id: 'm2', client_id: 'c1', name: 'Mr. Ravi Kumar', role: 'Accountant', email: 'ravi@kmch.in', phone: '9876500010', created_at: '2024-01-15T00:00:00Z' },
+  { id: 'm3', client_id: 'c2', name: 'Mr. Suresh Babu', role: 'Director', phone: '9876500002', pan: 'BKRPS5678L', din: '07654321', created_at: '2024-03-01T00:00:00Z' },
+  { id: 'm4', client_id: 'c4', name: 'Mr. Anand', role: 'Partner', phone: '9876500004', pan: 'AACPA9876C', created_at: '2024-01-20T00:00:00Z' },
+  { id: 'm5', client_id: 'c4', name: 'Mrs. Lakshmi', role: 'Partner', phone: '9876500011', pan: 'BKLPL4567D', created_at: '2024-01-20T00:00:00Z' },
+  { id: 'm6', client_id: 'c5', name: 'Ms. Priya Sharma', role: 'Director', email: 'priya@xyz.co.in', phone: '9876500005', pan: 'AABCX4321E', din: '03456789', created_at: '2024-04-01T00:00:00Z' },
+  { id: 'm7', client_id: 'c5', name: 'Mr. Vikram Reddy', role: 'Key Managerial Person', email: 'vikram@xyz.co.in', phone: '9876500012', created_at: '2024-04-01T00:00:00Z' },
 ];
