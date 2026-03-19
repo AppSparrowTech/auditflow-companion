@@ -1,18 +1,25 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { mockClients, mockTasks } from '@/data/mockData';
-import { CLIENT_TYPE_LABELS, ClientType } from '@/types';
+import { CLIENT_TYPE_LABELS, Client } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Building2 } from 'lucide-react';
+import { AddClientDialog } from '@/components/AddClientDialog';
 
 export default function ClientManagement() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [clients, setClients] = useState<Client[]>(mockClients);
 
-  const filtered = mockClients.filter(c => {
+  const handleAddClient = (client: Client) => {
+    mockClients.push(client);
+    setClients([...mockClients]);
+  };
+
+  const filtered = clients.filter(c => {
     const matchesSearch = !search || 
       c.client_name.toLowerCase().includes(search.toLowerCase()) ||
       c.file_number.toLowerCase().includes(search.toLowerCase()) ||
@@ -27,8 +34,9 @@ export default function ClientManagement() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Clients</h2>
-          <p className="text-muted-foreground text-sm">{mockClients.length} client files</p>
+          <p className="text-muted-foreground text-sm">{clients.length} client files</p>
         </div>
+        <AddClientDialog onAdd={handleAddClient} />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
