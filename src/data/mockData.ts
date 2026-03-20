@@ -124,3 +124,33 @@ export let mockDocuments: Document[] = [
   { id: 'd8', client_id: 'c4', name: 'Partnership Deed', category: 'Legal Documents', financial_year: '2024-25', uploaded_by: 'u4', upload_date: daysAgo(30), status: 'verified', version: 1 },
   { id: 'd9', client_id: 'c6', engagement_id: 'e7', name: 'GSTR-2A Reconciliation', category: 'GST Records', financial_year: '2024-25', uploaded_by: 'u3', upload_date: daysAgo(7), status: 'received', version: 1 },
 ];
+
+export let mockTimeSessions: TimeSession[] = [
+  { id: 'ts1', task_id: 't1', user_id: 'u2', start_time: daysAgo(28) + 'T09:00:00Z', end_time: daysAgo(28) + 'T12:30:00Z', duration_minutes: 210, notes: 'Initial fieldwork at KMCH' },
+  { id: 'ts2', task_id: 't1', user_id: 'u2', start_time: daysAgo(25) + 'T10:00:00Z', end_time: daysAgo(25) + 'T14:00:00Z', duration_minutes: 240, notes: 'Vouching and verification' },
+  { id: 'ts3', task_id: 't1', user_id: 'u2', start_time: daysAgo(20) + 'T09:30:00Z', end_time: daysAgo(20) + 'T11:45:00Z', duration_minutes: 135, notes: 'Revenue verification' },
+  { id: 'ts4', task_id: 't1a', user_id: 'u4', start_time: daysAgo(27) + 'T09:00:00Z', end_time: daysAgo(27) + 'T13:00:00Z', duration_minutes: 240, notes: 'Collecting vouchers from accounts dept' },
+  { id: 'ts5', task_id: 't1a', user_id: 'u4', start_time: daysAgo(24) + 'T10:00:00Z', end_time: daysAgo(24) + 'T16:30:00Z', duration_minutes: 390, notes: 'Ledger verification and tagging' },
+  { id: 'ts6', task_id: 't1b', user_id: 'u4', start_time: daysAgo(8) + 'T09:00:00Z', end_time: daysAgo(8) + 'T12:00:00Z', duration_minutes: 180, notes: 'Listing fixed assets' },
+  { id: 'ts7', task_id: 't1b', user_id: 'u4', start_time: daysAgo(5) + 'T14:00:00Z', end_time: daysAgo(5) + 'T17:30:00Z', duration_minutes: 210, notes: 'Depreciation calculation' },
+  { id: 'ts8', task_id: 't2', user_id: 'u3', start_time: daysAgo(12) + 'T10:00:00Z', end_time: daysAgo(12) + 'T13:00:00Z', duration_minutes: 180, notes: 'Preparing GSTR-3B' },
+  { id: 'ts9', task_id: 't4', user_id: 'u2', start_time: daysAgo(18) + 'T09:00:00Z', end_time: daysAgo(18) + 'T17:00:00Z', duration_minutes: 480, notes: 'Full day internal audit' },
+  { id: 'ts10', task_id: 't4', user_id: 'u2', start_time: daysAgo(15) + 'T09:00:00Z', end_time: daysAgo(15) + 'T13:00:00Z', duration_minutes: 240, notes: 'Report drafting' },
+  { id: 'ts11', task_id: 't9', user_id: 'u3', start_time: daysAgo(4) + 'T10:00:00Z', end_time: daysAgo(4) + 'T15:00:00Z', duration_minutes: 300, notes: 'TDS computation' },
+  { id: 'ts12', task_id: 't11', user_id: 'u3', start_time: daysAgo(7) + 'T09:00:00Z', end_time: daysAgo(7) + 'T12:30:00Z', duration_minutes: 210, notes: 'ITC reconciliation' },
+];
+
+export let mockStatusChanges: TaskStatusChange[] = [
+  { id: 'sc1', task_id: 't1', user_id: 'u2', from_status: 'not_started', to_status: 'started', changed_at: daysAgo(30) + 'T09:00:00Z' },
+  { id: 'sc2', task_id: 't1', user_id: 'u2', from_status: 'started', to_status: 'in_progress', changed_at: daysAgo(28) + 'T09:00:00Z', notes: 'Fieldwork commenced' },
+  { id: 'sc3', task_id: 't1a', user_id: 'u4', from_status: 'not_started', to_status: 'started', changed_at: daysAgo(28) + 'T09:00:00Z' },
+  { id: 'sc4', task_id: 't1a', user_id: 'u4', from_status: 'started', to_status: 'in_progress', changed_at: daysAgo(27) + 'T09:00:00Z' },
+  { id: 'sc5', task_id: 't1a', user_id: 'u4', from_status: 'in_progress', to_status: 'completed', changed_at: daysAgo(12) + 'T16:00:00Z', notes: 'All vouchers and ledgers collected' },
+  { id: 'sc6', task_id: 't2', user_id: 'u3', from_status: 'not_started', to_status: 'in_progress', changed_at: daysAgo(15) + 'T09:00:00Z' },
+  { id: 'sc7', task_id: 't2', user_id: 'u3', from_status: 'in_progress', to_status: 'completed', changed_at: daysAgo(6) + 'T14:00:00Z' },
+  { id: 'sc8', task_id: 't4', user_id: 'u2', from_status: 'not_started', to_status: 'in_progress', changed_at: daysAgo(20) + 'T09:00:00Z' },
+  { id: 'sc9', task_id: 't4', user_id: 'u2', from_status: 'in_progress', to_status: 'under_review', changed_at: daysAgo(3) + 'T16:00:00Z', notes: 'Draft report submitted' },
+  { id: 'sc10', task_id: 't8', user_id: 'u1', from_status: 'not_started', to_status: 'on_hold', changed_at: daysAgo(5) + 'T13:00:00Z', notes: 'Waiting for board resolution' },
+  { id: 'sc11', task_id: 't9', user_id: 'u3', from_status: 'not_started', to_status: 'in_progress', changed_at: daysAgo(5) + 'T10:00:00Z' },
+  { id: 'sc12', task_id: 't11', user_id: 'u3', from_status: 'not_started', to_status: 'in_progress', changed_at: daysAgo(8) + 'T09:00:00Z' },
+];
