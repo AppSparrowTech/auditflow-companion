@@ -1,7 +1,7 @@
 export type UserRole = 'admin' | 'manager' | 'article' | 'client_primary' | 'client_secondary' | 'billing_staff';
 export type ClientType = 'individual' | 'partnership' | 'company' | 'llp' | 'proprietorship' | 'trust' | 'hospital' | 'other';
 export type TaskType = 'itr_filing' | 'gst_return' | 'tds_return' | 'statutory_audit' | 'tax_audit' | 'gst_audit' | 'internal_audit' | 'bookkeeping' | 'roc_compliance' | 'other';
-export type TaskStatus = 'not_started' | 'in_progress' | 'under_review' | 'completed' | 'filed' | 'on_hold';
+export type TaskStatus = 'not_started' | 'started' | 'in_progress' | 'waiting_for_customer' | 'pending' | 'on_hold' | 'under_review' | 'completed' | 'filed';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type EngagementStatus = 'not_started' | 'in_progress' | 'review' | 'completed' | 'filed';
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
