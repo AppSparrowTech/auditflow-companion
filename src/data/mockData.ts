@@ -1,4 +1,4 @@
-import { User, Client, Task, TaskComment, ClientMember, Engagement, Invoice, ComplianceDeadline, Document } from '@/types';
+import { User, Client, Task, TaskComment, ClientMember, Engagement, Invoice, ComplianceDeadline, Document, TimeSession, TaskStatusChange } from '@/types';
 
 export const mockUsers: User[] = [
   { id: 'u1', name: 'Admin (Partner)', email: 'admin@auditflow.in', role: 'admin', phone: '9876543210', designation: 'Senior Partner', created_at: '2024-01-01T00:00:00Z' },
