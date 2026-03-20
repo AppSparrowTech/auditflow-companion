@@ -1,7 +1,7 @@
 export type UserRole = 'admin' | 'manager' | 'article' | 'client_primary' | 'client_secondary' | 'billing_staff';
 export type ClientType = 'individual' | 'partnership' | 'company' | 'llp' | 'proprietorship' | 'trust' | 'hospital' | 'other';
 export type TaskType = 'itr_filing' | 'gst_return' | 'tds_return' | 'statutory_audit' | 'tax_audit' | 'gst_audit' | 'internal_audit' | 'bookkeeping' | 'roc_compliance' | 'other';
-export type TaskStatus = 'not_started' | 'in_progress' | 'under_review' | 'completed' | 'filed' | 'on_hold';
+export type TaskStatus = 'not_started' | 'started' | 'in_progress' | 'waiting_for_customer' | 'pending' | 'on_hold' | 'under_review' | 'completed' | 'filed';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type EngagementStatus = 'not_started' | 'in_progress' | 'review' | 'completed' | 'filed';
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
@@ -78,6 +78,26 @@ export interface TaskComment {
   user_id: string;
   comment: string;
   created_at: string;
+}
+
+export interface TimeSession {
+  id: string;
+  task_id: string;
+  user_id: string;
+  start_time: string;
+  end_time?: string;
+  duration_minutes?: number; // computed when ended
+  notes?: string;
+}
+
+export interface TaskStatusChange {
+  id: string;
+  task_id: string;
+  user_id: string;
+  from_status: TaskStatus;
+  to_status: TaskStatus;
+  changed_at: string;
+  notes?: string;
 }
 
 export interface ClientMember {
@@ -162,11 +182,27 @@ export const TASK_TYPE_LABELS: Record<TaskType, string> = {
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   not_started: 'Not Started',
+  started: 'Started',
   in_progress: 'In Progress',
+  waiting_for_customer: 'Waiting for Customer Input',
+  pending: 'Pending',
+  on_hold: 'On Hold',
   under_review: 'Under Review',
   completed: 'Completed',
   filed: 'Filed',
-  on_hold: 'On Hold',
+};
+
+export const TASK_TYPE_COLORS: Record<TaskType, { bg: string; text: string; border: string }> = {
+  itr_filing: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+  gst_return: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
+  tds_return: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+  statutory_audit: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
+  tax_audit: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+  gst_audit: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
+  internal_audit: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
+  bookkeeping: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
+  roc_compliance: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
+  other: { bg: 'bg-stone-50', text: 'text-stone-700', border: 'border-stone-200' },
 };
 
 export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
