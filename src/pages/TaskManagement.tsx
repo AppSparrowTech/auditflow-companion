@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { mockTasks, mockClients, mockUsers } from '@/data/mockData';
+import { mockTasks, mockClients, mockUsers, mockTimeSessions } from '@/data/mockData';
 import { TASK_TYPE_LABELS, TASK_STATUS_LABELS } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TaskStatusBadge } from '@/components/TaskStatusBadge';
+import { TaskTypeBadge } from '@/components/TaskTypeBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { DeadlineIndicator } from '@/components/DeadlineIndicator';
-import { Search } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Search, Clock } from 'lucide-react';
 import { isStaffRole } from '@/contexts/AuthContext';
+
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m}m`;
+  return `${h}h ${m}m`;
+}
 
 export default function TaskManagement() {
   const [search, setSearch] = useState('');
@@ -20,6 +29,11 @@ export default function TaskManagement() {
   const staff = mockUsers.filter(u => isStaffRole(u.role));
   const getClientName = (id: string) => mockClients.find(c => c.id === id)?.client_name ?? '';
   const getAssigneeName = (id: string) => mockUsers.find(u => u.id === id)?.name ?? '';
+  const getTaskHours = (taskId: string) => {
+    return mockTimeSessions
+      .filter(s => s.task_id === taskId && s.duration_minutes)
+      .reduce((sum, s) => sum + (s.duration_minutes ?? 0), 0);
+  };
 
   const filtered = mockTasks.filter(t => {
     const matchesSearch = !search || t.title.toLowerCase().includes(search.toLowerCase()) || getClientName(t.client_id).toLowerCase().includes(search.toLowerCase());
@@ -76,25 +90,38 @@ export default function TaskManagement() {
                   <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Assigned</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Status</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Priority</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Hours</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Due</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">FY</th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(task => (
-                  <tr key={task.id} className="border-b last:border-0 hover:bg-muted/20">
-                    <td className="py-3 px-4"><Link to={`/admin/tasks/${task.id}`} className="font-medium hover:text-primary">{task.title}</Link></td>
-                    <td className="py-3 px-4 text-muted-foreground">{getClientName(task.client_id)}</td>
-                    <td className="py-3 px-4 text-muted-foreground text-xs">{TASK_TYPE_LABELS[task.task_type]}</td>
-                    <td className="py-3 px-4 text-muted-foreground">{getAssigneeName(task.assigned_to)}</td>
-                    <td className="py-3 px-4"><TaskStatusBadge status={task.status} /></td>
-                    <td className="py-3 px-4"><PriorityBadge priority={task.priority} /></td>
-                    <td className="py-3 px-4"><DeadlineIndicator dueDate={task.due_date} status={task.status} /></td>
-                    <td className="py-3 px-4 text-xs text-muted-foreground">{task.financial_year}</td>
-                  </tr>
-                ))}
+                {filtered.map(task => {
+                  const hours = getTaskHours(task.id);
+                  return (
+                    <tr key={task.id} className="border-b last:border-0 hover:bg-muted/20">
+                      <td className="py-3 px-4"><Link to={`/admin/tasks/${task.id}`} className="font-medium hover:text-primary">{task.title}</Link></td>
+                      <td className="py-3 px-4 text-muted-foreground">{getClientName(task.client_id)}</td>
+                      <td className="py-3 px-4"><TaskTypeBadge type={task.task_type} /></td>
+                      <td className="py-3 px-4 text-muted-foreground">{getAssigneeName(task.assigned_to)}</td>
+                      <td className="py-3 px-4"><TaskStatusBadge status={task.status} /></td>
+                      <td className="py-3 px-4"><PriorityBadge priority={task.priority} /></td>
+                      <td className="py-3 px-4">
+                        {hours > 0 ? (
+                          <Badge variant="secondary" className="font-mono text-xs gap-1">
+                            <Clock className="h-3 w-3" />{formatDuration(hours)}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">—</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4"><DeadlineIndicator dueDate={task.due_date} status={task.status} /></td>
+                      <td className="py-3 px-4 text-xs text-muted-foreground">{task.financial_year}</td>
+                    </tr>
+                  );
+                })}
                 {filtered.length === 0 && (
-                  <tr><td colSpan={8} className="py-8 text-center text-muted-foreground">No tasks match your filters</td></tr>
+                  <tr><td colSpan={9} className="py-8 text-center text-muted-foreground">No tasks match your filters</td></tr>
                 )}
               </tbody>
             </table>
