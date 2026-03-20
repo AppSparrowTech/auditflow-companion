@@ -5,14 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDateIN } from '@/lib/dateUtils';
 import { Building2, FileText, User } from 'lucide-react';
 
-const statusOrder: TaskStatus[] = ['not_started', 'in_progress', 'under_review', 'completed', 'filed'];
+const statusOrder: TaskStatus[] = ['not_started', 'started', 'in_progress', 'waiting_for_customer', 'pending', 'under_review', 'completed', 'filed'];
 const statusColors: Record<TaskStatus, string> = {
   not_started: 'bg-muted',
+  started: 'bg-blue-400',
   in_progress: 'bg-blue-500',
+  waiting_for_customer: 'bg-yellow-500',
+  pending: 'bg-orange-400',
+  on_hold: 'bg-red-500',
   under_review: 'bg-amber-500',
   completed: 'bg-green-500',
   filed: 'bg-emerald-500',
-  on_hold: 'bg-orange-500',
 };
 
 function StatusProgress({ status }: { status: TaskStatus }) {
