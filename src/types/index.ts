@@ -80,6 +80,26 @@ export interface TaskComment {
   created_at: string;
 }
 
+export interface TimeSession {
+  id: string;
+  task_id: string;
+  user_id: string;
+  start_time: string;
+  end_time?: string;
+  duration_minutes?: number; // computed when ended
+  notes?: string;
+}
+
+export interface TaskStatusChange {
+  id: string;
+  task_id: string;
+  user_id: string;
+  from_status: TaskStatus;
+  to_status: TaskStatus;
+  changed_at: string;
+  notes?: string;
+}
+
 export interface ClientMember {
   id: string;
   client_id: string;
